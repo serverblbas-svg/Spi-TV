@@ -110,8 +110,7 @@
     <div class="marquee-text">
         <span style="color: #d4af37;">🌙 خەتمی قورئانی بەڕێز</span> &nbsp;&nbsp;&nbsp;&nbsp;🔹&nbsp;&nbsp;&nbsp;&nbsp; 
         <span>🎧 بە دەنگی ٣٢ قورئان خوێنی بەناوبانگی جیهانی</span> &nbsp;&nbsp;&nbsp;&nbsp;🔹&nbsp;&nbsp;&nbsp;&nbsp; 
-        <span style="color: #d4af37;">📻 ڕادیۆی سپی - هەولێر</span> &nbsp;&nbsp;&nbsp;&nbsp;🔹&nbsp;&nbsp;&nbsp;&nbsp; 
-        <span>✨ سیستمی پشکنینی کات بۆ 6:05ی ئێوارە چالاکە</span>
+        <span style="color: #d4af37;">📻 ڕادیۆی سپی - هەولێر</span>
     </div>
 </div>
 
@@ -147,7 +146,7 @@
         </div>
         <div class="list-header">
             <div class="col-id">#</div>
-            <div class="col-main">خشتەی جزم و زیکرەکان</div>
+            <div class="col-main">خشتەی جزمەکان</div>
         </div>
         <div class="list-container" id="playlistItems"></div>
     </div>
@@ -198,28 +197,12 @@
 
     let currentIndex = 0;
 
-    // لۆجیکی نوێکراوەی کات - گونجاوە بۆ تاقیکردنەوەی دەستبەجێ لە کاتژمێر 6:05ی ئێوارە
-    function checkZikrTime() {
-        const now = new Date();
-        const currentHour = now.getHours();
-        const currentMinute = now.getMinutes();
-        
-        // ئەگەر کاتژمێر ١٨ (٦ی ئێوارە) بێت و خولەک لە نێوان ٠ بۆ ٣٠ بێت (تەواو گونجاوە بۆ تاقیکردنەوەی 18:21)
-        if (currentHour === 18 && currentMinute >= 0 && currentMinute <= 30) {
-            playlist.unshift({ name: "🌙 زیکرەکانی ئێواران (تاقیکردنەوە 6:05)", url: "https://dso5.raed.net:452/files/azkar-sabah-serverblbas.mp3" });
-        }
-        // مەرجی گشتی بۆ کاتەکانی تری بەیانیان
-        else if (currentHour >= 5 && currentHour < 12) {
-            playlist.unshift({ name: "☀️ زیکرەکانی بەیانیان (خۆکار)", url: "https://dso5.raed.net:452/files/azkar-sabah-serverblbas.mp3" });
-        }
-    }
-
     setInterval(() => { clock.innerText = new Date().toLocaleTimeString('en-GB'); }, 1000);
 
     function renderPlaylist() {
         playlistContainer.innerHTML = playlist.map((item, i) => `
             <div class="item ${currentIndex === i ? 'active' : ''}" onclick="playTrack(${i})">
-                <div class="col-id">${item.name.includes("زیکر") ? "✨" : (i + 1).toString().padStart(2, '0')}</div>
+                <div class="col-id">${(i + 1).toString().padStart(2, '0')}</div>
                 <div class="col-main">
                     <div class="v-name">${item.name}</div>
                 </div>
@@ -277,7 +260,6 @@
     }, { once: true });
 
     window.onload = () => {
-        checkZikrTime();
         renderPlaylist();
     };
 </script>
