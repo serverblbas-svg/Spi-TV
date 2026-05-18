@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radio Spi Erbil - QURAN PRO 🌙</title>
+    <style>
+        :root { --primary: #1b4332; --accent: #d4af37; --bg: #050a08; --danger: #e63946; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', Tahoma, sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+        header { height: 65px; background: #000; border-bottom: 2px solid var(--accent); display: flex; align-items: center; padding: 0 20px; justify-content: space-between; position: relative; z-index: 30; }
+        .on-air { background: var(--danger); color: #fff; padding: 4px 12px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; animation: blink 1.5s infinite; }
+        @keyframes blink { 0% {opacity: 1;} 50% {opacity: 0.4;} 100% {opacity: 1;} }
+
+        .logo-container { position: relative; display: inline-block; padding: 5px 10px; overflow: hidden; }
+        .logo-text { font-weight: 900; font-size: 1.3rem; letter-spacing: 1px; color: #fff; animation: pulse 2s ease-in-out infinite; }
+        .gold-text { color: var(--accent); text-shadow: 0 0 10px rgba(212, 175, 55, 0.6); }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.03); opacity: 1; text-shadow: 0 0 15px rgba(255,255,255,0.3); }
+            100% { transform: scale(1); opacity: 0.9; }
+        }
+        .logo-container::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent);
+            transform: skewX(-25deg); animation: shine 4s infinite;
+        }
+        @keyframes shine { 0% { left: -100%; } 20% { left: 150%; } 100% { left: 150%; } }
+
+        .marquee-container { background: #111; border-bottom: 1px solid var(--accent); padding: 8px 0; overflow: hidden; white-space: nowrap; width: 100%; position: relative; z-index: 30; }
+        .marquee-text { display: inline-block; padding-right: 100%; animation: marquee 25s linear infinite; font-size: 1.1rem; font-weight: bold; color: #fff; }
+        @keyframes marquee { 
+            0% { transform: translate3d(0, 0, 0); } 
+            100% { transform: translate3d(100%, 0, 0); } 
+        }
+
+        .main { flex: 1; display: flex; overflow: hidden; position: relative; }
+
+        .player-section { flex: 1; display: flex; flex-direction: column; background: #000; position: relative; transition: all 0.3s ease; }
+        .status-bar { height: 55px; background: #111; display: flex; align-items: center; padding: 0 20px; justify-content: space-between; font-size: 0.85rem; border-bottom: 1px solid #222; z-index: 20; }
+        .next-info { color: var(--accent); font-weight: bold; }
+        
+        .video-box { flex: 1; position: relative; background: #000; display: flex; align-items: center; justify-content: center; flex-direction: column; cursor: pointer; overflow: hidden; }
+        
+        .video-box::before {
+            content: ""; position: absolute; width: 100%; height: 100%;
+            background: url('https://www.raed.net/thumb?id=1546751') no-repeat center;
+            background-size: contain; opacity: 0.15; transition: opacity 0.3s;
+        }
+
+        .promo-text { position: relative; z-index: 10; text-align: center; margin-bottom: 20px; pointer-events: none; }
+        .promo-text h1 { color: var(--accent); font-size: 2.2rem; text-shadow: 0 0 15px rgba(212,175,55,0.5); font-weight: bold; }
+        .promo-text p { font-size: 1.3rem; margin-top: 12px; color: #eee; font-weight: 500; }
+
+        .wave-container { display: flex; align-items: flex-end; gap: 4px; height: 40px; margin-bottom: 30px; position: relative; z-index: 10; opacity: 0; transition: opacity 0.3s; }
+        .wave-container.playing { opacity: 1; }
+        .bar { width: 4px; height: 10px; background: var(--accent); animation: bounce 1s ease-in-out infinite alternate; border-radius: 2px; }
+        .bar:nth-child(2) { animation-delay: 0.2s; height: 15px; }
+        .bar:nth-child(3) { animation-delay: 0.4s; height: 25px; }
+        .bar:nth-child(4) { animation-delay: 0.6s; height: 35px; }
+        .bar:nth-child(5) { animation-delay: 0.3s; height: 20px; }
+        @keyframes bounce { 100% { height: 40px; filter: drop-shadow(0 0 5px var(--accent)); } }
+
+        .controls-wrapper { width: 100%; padding: 15px; background: rgba(0,0,0,0.8); position: absolute; bottom: 0; left: 0; z-index: 25; display: flex; justify-content: center; backdrop-filter: blur(5px); transform: translateY(100%); transition: transform 0.3s; }
+        .player-section:hover .controls-wrapper, .video-box:fullscreen .controls-wrapper { transform: translateY(0); }
+        audio { width: 85%; filter: invert(1) hue-rotate(180deg); }
+
+        .fs-close-btn { position: absolute; top: 20px; left: 20px; background: rgba(255,255,255,0.2); border: none; color: #fff; padding: 10px 15px; border-radius: 5px; cursor: pointer; z-index: 99; display: none; font-weight: bold; font-family: sans-serif; }
+        :fullscreen .fs-close-btn { display: block; }
+
+        .sidebar { width: 400px; background: #0a0a0a; border-right: 1px solid var(--accent); display: flex; flex-direction: column; z-index: 20; transition: all 0.3s ease; }
+        .toolbar { padding: 15px; background: #111; border-bottom: 1px solid #222; text-align: center; }
+        .btn-play { background: var(--accent); color: #000; padding: 12px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; border: none; width: 100%; font-size: 1rem; transition: 0.3s; }
+        .btn-play:hover { background: #fff; }
+
+        .list-header { display: flex; padding: 12px 10px; background: #1a1a1a; font-size: 0.75rem; color: var(--accent); border-bottom: 1px solid #333; font-weight: bold; }
+        .list-container { flex: 1; overflow-y: auto; }
+        
+        .item { display: flex; align-items: center; padding: 12px 10px; border-bottom: 1px solid #1a1a1a; cursor: pointer; transition: 0.2s; }
+        .item:hover { background: #151515; }
+        .item.active { background: rgba(212, 175, 55, 0.15); color: var(--accent); border-right: 4px solid var(--accent); }
+        
+        .col-id { width: 45px; opacity: 0.5; font-family: monospace; }
+        .col-main { flex: 1; }
+        .v-name { font-weight: bold; font-size: 0.9rem; }
+
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: var(--accent); }
+
+        .video-box:fullscreen::before { opacity: 0.25; }
+        .video-box:fullscreen .promo-text h1 { font-size: 3.5rem; }
+        .video-box:fullscreen .promo-text p { font-size: 2rem; }
+        .video-box:fullscreen .wave-container { transform: scale(1.5); margin-bottom: 50px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div style="display:flex; align-items:center; gap:15px;">
+        <div class="on-air">LIVE</div>
+        <div class="logo-container">
+            <span class="logo-text">RADIO <span class="gold-text">SPI ERBIL</span></span>
+        </div>
+    </div>
+    <div id="clock" style="font-family:monospace; font-size:1.2rem; color:var(--accent);">00:00:00</div>
+</header>
+
+<div class="marquee-container">
+    <div class="marquee-text">
+        <span style="color: #d4af37;">🌙 خەتمی قورئانی بەڕێز</span> &nbsp;&nbsp;&nbsp;&nbsp;🔹&nbsp;&nbsp;&nbsp;&nbsp; 
+        <span>🎧 بە دەنگی ٣٢ قورئان خوێنی بەناوبانگی جیهانی</span> &nbsp;&nbsp;&nbsp;&nbsp;🔹&nbsp;&nbsp;&nbsp;&nbsp; 
+        <span style="color: #d4af37;">📻 ڕادیۆی سپی - هەولێر</span> &nbsp;&nbsp;&nbsp;&nbsp;🔹&nbsp;&nbsp;&nbsp;&nbsp; 
+        <span>✨ سیستمی پشکنینی کات بۆ 6:05ی ئێوارە چالاکە</span>
+    </div>
+</div>
+
+<div class="main">
+    <div class="player-section">
+        <div class="status-bar">
+            <div id="nowPlaying">ئێستا: چاوەڕوانی کلیک بکە...</div>
+            <div class="next-info" id="nextPlaying">دواتر: --:--</div>
+        </div>
+        
+        <div class="video-box" id="fullscreenArea" onclick="toggleFullScreen()">
+            <button class="fs-close-btn" onclick="event.stopPropagation(); toggleFullScreen();">X دەرچوون</button>
+            <div class="promo-text">
+                <h1>خەتمی قورئانی بەڕێز</h1>
+                <p>بە دەنگی ٣٢ قورئان خوێنی بەناوبانگی جیهانی</p>
+            </div>
+            
+            <div class="wave-container" id="waveVisual">
+                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+
+            <div class="controls-wrapper" onclick="event.stopPropagation();">
+                <audio id="mainAudio" controls></audio>
+            </div>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="toolbar">
+            <button class="btn-play" onclick="startRadio()">▶ دەستپێکردنی پەخش</button>
+        </div>
+        <div class="list-header">
+            <div class="col-id">#</div>
+            <div class="col-main">خشتەی جزم و زیکرەکان</div>
+        </div>
+        <div class="list-container" id="playlistItems"></div>
+    </div>
+</div>
+
+<script>
+    const audio = document.getElementById('mainAudio');
+    const playlistContainer = document.getElementById('playlistItems');
+    const clock = document.getElementById('clock');
+    const nowPlayingText = document.getElementById('nowPlaying');
+    const nextPlayingText = document.getElementById('nextPlaying');
+    const waveVisual = document.getElementById('waveVisual');
+    const fullscreenArea = document.getElementById('fullscreenArea');
+
+    let playlist = [
+        { name: "جوزئی 01", url: "https://dso2.raed.net:454/files/01_e4ecd.mp3" },
+        { name: "جوزئی 02", url: "https://dso7.raed.net:451/files/02_dc1d2.mp3" },
+        { name: "جوزئی 03", url: "https://dso5.raed.net:452/files/03_5db26.mp3" },
+        { name: "جوزئی 04", url: "https://dso5.raed.net:449/files/04_89ebb.mp3" },
+        { name: "جوزئی 05", url: "https://dso8.raed.net:455/files/05_953a6.mp3" },
+        { name: "جوزئی 06", url: "https://dso2.raed.net:454/files/06.mp3" },
+        { name: "جوزئی 07", url: "https://dso5.raed.net:449/files/07.mp3" },
+        { name: "جوزئی 08", url: "https://dso2.raed.net:454/files/08_72647.mp3" },
+        { name: "جوزئی 09", url: "https://dso2.raed.net:454/files/09_12254.mp3" },
+        { name: "جوزئی 10", url: "https://dso2.raed.net:454/files/10.mp3" },
+        { name: "جوزئی 11", url: "https://dso5.raed.net:452/files/11_81465.mp3" },
+        { name: "جوزئی 12", url: "https://dso2.raed.net:454/files/12_1223c.mp3" },
+        { name: "جوزئی 13", url: "https://dso5.raed.net:452/files/13_4696b.mp3" },
+        { name: "جوزئی 14", url: "https://dso7.raed.net:451/files/14.mp3" },
+        { name: "جوزئی 15", url: "https://dso2.raed.net:454/files/15.mp3" },
+        { name: "جوزئی 16", url: "https://dso2.raed.net:454/files/16.mp3" },
+        { name: "جوزئی 17", url: "https://dso2.raed.net:454/files/17_5f6e3.mp3" },
+        { name: "جوزئی 18", url: "https://dso7.raed.net:451/files/18.mp3" },
+        { name: "جوزئی 19", url: "https://dso5.raed.net:449/files/19_528fe.mp3" },
+        { name: "جوزئی 20", url: "https://dso5.raed.net:449/files/20_d0992.mp3" },
+        { name: "جوزئی 21", url: "https://dso5.raed.net:452/files/21.mp3" },
+        { name: "جوزئی 22", url: "https://dso5.raed.net:452/files/22_15d56.mp3" },
+        { name: "جوزئی 23", url: "https://dso5.raed.net:452/files/23_deff0.mp3" },
+        { name: "جوزئی 24", url: "https://dso5.raed.net:449/files/24_1492a.mp3" },
+        { name: "جوزئی 25", url: "https://dso5.raed.net:452/files/25.mp3" },
+        { name: "جوزئی 26", url: "https://dso6.raed.net:447/files/26_70fe1.mp3" },
+        { name: "جوزئی 27", url: "https://dso2.raed.net:454/files/27.mp3" },
+        { name: "جوزئی 28", url: "https://dso5.raed.net:452/files/28.mp3" },
+        { name: "جوزئی 29", url: "https://dso2.raed.net:454/files/29_c585a.mp3" },
+        { name: "جوزئی 30", url: "https://dso2.raed.net:454/files/30.mp3" },
+        { name: "دوعای خەتمی قورئان", url: "https://dso7.raed.net:451/files/031-dua-khatm-al-quran-al-kareem.mp3" }
+    ];
+
+    let currentIndex = 0;
+
+    // لۆجیکی نوێکراوەی کات - گونجاوە بۆ تاقیکردنەوەی دەستبەجێ لە کاتژمێر 6:05ی ئێوارە
+    function checkZikrTime() {
+        const now = new Date();
+        const currentHour = now.getHours();
+        const currentMinute = now.getMinutes();
+        
+        // ئەگەر کاتژمێر ١٨ (٦ی ئێوارە) بێت و خولەک لە نێوان ٠ بۆ ٣٠ بێت (تەواو گونجاوە بۆ تاقیکردنەوەی 18:21)
+        if (currentHour === 18 && currentMinute >= 0 && currentMinute <= 30) {
+            playlist.unshift({ name: "🌙 زیکرەکانی ئێواران (تاقیکردنەوە 6:05)", url: "https://dso5.raed.net:452/files/azkar-sabah-serverblbas.mp3" });
+        }
+        // مەرجی گشتی بۆ کاتەکانی تری بەیانیان
+        else if (currentHour >= 5 && currentHour < 12) {
+            playlist.unshift({ name: "☀️ زیکرەکانی بەیانیان (خۆکار)", url: "https://dso5.raed.net:452/files/azkar-sabah-serverblbas.mp3" });
+        }
+    }
+
+    setInterval(() => { clock.innerText = new Date().toLocaleTimeString('en-GB'); }, 1000);
+
+    function renderPlaylist() {
+        playlistContainer.innerHTML = playlist.map((item, i) => `
+            <div class="item ${currentIndex === i ? 'active' : ''}" onclick="playTrack(${i})">
+                <div class="col-id">${item.name.includes("زیکر") ? "✨" : (i + 1).toString().padStart(2, '0')}</div>
+                <div class="col-main">
+                    <div class="v-name">${item.name}</div>
+                </div>
+            </div>
+        `).join('');
+        updateStatus();
+    }
+
+    function playTrack(index) {
+        if (index < 0 || index >= playlist.length) return;
+        currentIndex = index;
+        audio.src = playlist[index].url;
+        audio.play().then(() => {
+            waveVisual.classList.add('playing');
+        }).catch(e => {
+            console.log("پێویستە کلیک بکەیت");
+        });
+        renderPlaylist();
+        
+        setTimeout(() => {
+            document.querySelector('.active')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 200);
+    }
+
+    function startRadio() { playTrack(0); }
+
+    function updateStatus() {
+        nowPlayingText.innerText = "📻 ئێستا: " + playlist[currentIndex].name;
+        const next = playlist[currentIndex + 1];
+        nextPlayingText.innerText = next ? "⏭️ دواتر: " + next.name : "⏭️ کۆتایی لیست 🔄";
+    }
+
+    function toggleFullScreen() {
+        if (!document.fullscreenElement) {
+            fullscreenArea.requestFullscreen().catch(err => {
+                alert(`Error: ${err.message}`);
+            });
+        } else {
+            document.exitFullscreen();
+        }
+    }
+
+    audio.onplay = () => waveVisual.classList.add('playing');
+    audio.onpause = () => waveVisual.classList.remove('playing');
+
+    audio.onended = () => {
+        currentIndex = (currentIndex + 1) % playlist.length;
+        playTrack(currentIndex);
+    };
+
+    document.body.addEventListener('click', function() {
+        if (audio.paused && audio.src === "") {
+            startRadio();
+        }
+    }, { once: true });
+
+    window.onload = () => {
+        checkZikrTime();
+        renderPlaylist();
+    };
+</script>
+</body>
+</html>
